@@ -45,6 +45,7 @@ class _AgendamentoEventoTelaState extends State<AgendamentoEventoTela> {
   ];
 
   static const List<String> _tagsPadrao = [];
+  static const bool _lembretePadrao = true;
 
   static const Map<String, bool> _servicosPadrao = {
     'Buffet': false,
@@ -60,6 +61,7 @@ class _AgendamentoEventoTelaState extends State<AgendamentoEventoTela> {
   late Visibilidade _visibilidadeSelecionada;
   late Map<String, bool> _servicosSelecionados;
   late List<String> _tagsSelecionadas;
+  late bool _notificacaoAtiva;
 
   @override
   void initState() {
@@ -76,6 +78,7 @@ class _AgendamentoEventoTelaState extends State<AgendamentoEventoTela> {
       _visibilidadeSelecionada = _visibilidadePadrao;
       _servicosSelecionados = Map<String, bool>.from(_servicosPadrao);
       _tagsSelecionadas = List<String>.from(_tagsPadrao);
+      _notificacaoAtiva = _lembretePadrao;
     });
     print('[DEBUG] Formulario resetado para os valores padrao.');
   }
@@ -93,6 +96,7 @@ class _AgendamentoEventoTelaState extends State<AgendamentoEventoTela> {
     print('Visibilidade: $_visibilidadeSelecionada');
     print('Serviços Adicionais: $_servicosSelecionados');
     print('Restrições Alimentares (Tags): $_tagsSelecionadas');
+    print('Lembrete automático $_notificacaoAtiva');
     print('=============================');
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -325,6 +329,25 @@ class _AgendamentoEventoTelaState extends State<AgendamentoEventoTela> {
               }).toList(),
             ), // Wrap
             const Divider(height: 32),
+
+            // --- 8. Switch
+            SwitchListTile(
+              title: const Text('Enviar Lembrete Automatico'),
+              subtitle: const Text(
+                'Notificar convidados 24 horas antes do evento',
+              ),
+              value: _notificacaoAtiva,
+              onChanged: (bool ativo) {
+                setState(() {
+                  _notificacaoAtiva = ativo;
+                });
+
+                print(
+                  '[DEBUG - Switch] Notificacao automatica alterada para: $ativo',
+                );
+              },
+            ), // SwitchListTile
+            const SizedBox(height: 24),
           ],
         ),
       ),
