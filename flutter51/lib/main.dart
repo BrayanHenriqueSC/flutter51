@@ -37,6 +37,15 @@ class _AgendamentoEventoTelaState extends State<AgendamentoEventoTela> {
   static const double _convidadosPadrao = 50.0;
   static const Visibilidade _visibilidadePadrao = .private;
 
+  static const List<String> _tagsDisponiveis = [
+    'Vegetariano',
+    'Sem Glúten',
+    'Sem lactose',
+    'Vegano',
+  ];
+
+  static const List<String> _tagsPadrao = [];
+
   static const Map<String, bool> _servicosPadrao = {
     'Buffet': false,
     'Fotógrafo': false,
@@ -50,6 +59,7 @@ class _AgendamentoEventoTelaState extends State<AgendamentoEventoTela> {
   late double _quantidadeConvidados;
   late Visibilidade _visibilidadeSelecionada;
   late Map<String, bool> _servicosSelecionados;
+  late List<String> _tagsSelecionadas;
 
   @override
   void initState() {
@@ -65,6 +75,7 @@ class _AgendamentoEventoTelaState extends State<AgendamentoEventoTela> {
       _quantidadeConvidados = _convidadosPadrao;
       _visibilidadeSelecionada = _visibilidadePadrao;
       _servicosSelecionados = Map<String, bool>.from(_servicosPadrao);
+      _tagsSelecionadas = List<String>.from(_tagsPadrao);
     });
     print('[DEBUG] Formulario resetado para os valores padrao.');
   }
@@ -81,7 +92,7 @@ class _AgendamentoEventoTelaState extends State<AgendamentoEventoTela> {
     print('Estimativa de Convidados: ${_quantidadeConvidados.round()}');
     print('Visibilidade: $_visibilidadeSelecionada');
     print('Serviços Adicionais: $_servicosSelecionados');
-
+    print('Restrições Alimentares (Tags): $_tagsSelecionadas');
     print('=============================');
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -273,7 +284,7 @@ class _AgendamentoEventoTelaState extends State<AgendamentoEventoTela> {
                   value: _servicosSelecionados[servico],
                   onChanged: (bool? marcado) {
                     setState(() {
-                      _servicosSelecionados[servico] - marcado ?? false;
+                      _servicosSelecionados[servico] = marcado ?? false;
                     });
 
                     print(
@@ -283,6 +294,36 @@ class _AgendamentoEventoTelaState extends State<AgendamentoEventoTela> {
                 ); // CheckboxListTile
               }).toList(),
             ), // Column
+            const Divider(height: 32),
+
+            // --- 7. Chip (FilterChip)
+            Text(
+              'Restrições Alimentares (Tags)',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8.0,
+              children: _tagsDisponiveis.map((tag) {
+                final estaSelecionado = _tagsSelecionadas.contains(tag);
+                return FilterChip(
+                  label: Text(tag),
+                  selected: estaSelecionado,
+                  onSelected: (bool selecionado) {
+                    setState(() {
+                      if (selecionado) {
+                        _tagsSelecionadas.add(tag);
+                      } else {
+                        _tagsSelecionadas.remove(tag);
+                      }
+                    });
+                    print(
+                      '[DEBUG - Chip] Tag "$tag" ${selecionado ? "adicionada" : "removida"}. Lista atual: $_tagsSelecionadas',
+                    );
+                  },
+                ); // FilterChip
+              }).toList(),
+            ), // Wrap
             const Divider(height: 32),
           ],
         ),
